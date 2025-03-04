@@ -1,27 +1,36 @@
 class Cell {
   constructor(tiles) {
-    this.observed = false;
     this.tiles = tiles;
+
     this.tile = undefined;
+    this.observed = false;
   }
 
+  // Observes and collapses this cell
   observe() {
-    if (!this.observed) {
-      this.observed = true;
+    this.observed = true;
 
-      let randomIndex = Math.floor(Math.random() * this.tiles.length);
-      this.tile = this.tiles[randomIndex];
-    } else {
-      throw new Error("Cannot observed already observed cell");
-    }
+    let randomIndex = Math.floor(Math.random() * this.tiles.length);
+    this.tile = this.tiles[randomIndex];
+    this.tiles = [this.tile];
   }
 
-  update(tile, direction) {
-    this.tiles = this.tiles.filter((t) => {
-      return t.canBeAdjacent(tile, direction);
+  // Updates the given cell's tile set based this cell's tile set
+  // in the direction from this cell to the given cell
+  update(cell, direction) {
+    cell.tiles = cell.tiles.filter((otherTile) => {
+      let keep = false;
+      
+      // If a tile can be adjacent to at least one tile in
+      // this cell's tile set, it can stay in the other cell's tile set
+      this.tiles.forEach((thisTile) => {
+        keep = keep || otherTile.canBeAdjacent(thisTile, direction);
+      })
+      
+      return keep;
     });
   }
-
+  
   draw(x, y) {
     if (!this.observed) {
       // Two display modes:
@@ -29,15 +38,15 @@ class Cell {
       // Colors unobserved cells with shades of gray
       // -------------------------------------------
       // fill(255/this.tiles.length);
-      // rect(x, y, IMG_SIZE, IMG_SIZE);
+      // rect(x, y, TILE_SIZE, TILE_SIZE);
       
       // Slows down program, but displays unobserved
-      // cells as all their possibilities
+      // cells as all their possibilities overlapped
       // -------------------------------------------
       this.tiles.forEach((tile) => {
         tint(255, 255/this.tiles.length);
         image(tile.img, x, y);
-      })
+      });
     } else {
       tint(255);
       image(this.tile.img, x, y);

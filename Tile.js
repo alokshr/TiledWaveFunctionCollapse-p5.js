@@ -3,7 +3,9 @@ class Tile {
     this.img = img;
     this.adjacencies = adjacencies;
   }
-
+  
+  // Checks if this tile is in a given tile's adjacency list
+  // in the given direction
   canBeAdjacent(tile, direction) {
     switch (direction) {
       case "NORTH":
@@ -19,3 +21,5 @@ class Tile {
     }
   }
 }
+
+
